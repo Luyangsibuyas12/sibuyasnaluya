@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Visualizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2e3b4e;
+            color: white;
+            text-align: center;
+            margin: 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        input, button, textarea {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #5368E6;
+            border-radius: 5px;
+            background-color: #353A40;
+            color: white;
+            font-size: 14px;
+        }
+        button {
+            cursor: pointer;
+            background-color: #5368E6;
+        }
+        button:hover {
+            background-color: #91A5A7;
+        }
+        #output {
+            margin-top: 20px;
+            background-color: #91A5A7;
+            padding: 15px;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #353A40;
+        }
+        #algorithmList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .algorithm-btn {
+            margin: 10px;
+            padding: 12px 20px;
+            background-color: #CD873C;
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .algorithm-btn:hover {
+            background-color: #91A5A7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Algorithm Visualizer</h1>
+        <p>Select an algorithm and enter your data to run:</p>
+        <div id="algorithmList"></div>
+
+        <div id="output">
+            Results will be displayed here.
+        </div>
+    </div>
+
+    <script>
+        // Sorting Algorithms
+        function bubbleSort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n-1; i++) {
+                for (let j = 0; j < n-i-1; j++) {
+                    if (arr[j] > arr[j+1]) {
+                        let temp = arr[j];
+                        arr[j] = arr[j+1];
+                        arr[j+1] = temp;
+                    }
+                }
+            }
+            return arr;
+        }
+
+        function selectionSort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n-1; i++) {
+                let minIndex = i;
+                for (let j = i+1; j < n; j++) {
+                    if (arr[j] < arr[minIndex]) {
+                        minIndex = j;
+                    }
+                }
+                let temp = arr[minIndex];
+                arr[minIndex] = arr[i];
+                arr[i] = temp;
+            }
+            return arr;
+        }
+
+        function insertionSort(arr) {
+            for (let i = 1; i < arr.length; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                while (j >= 0 && arr[j] > key) {
+                    arr[j + 1] = arr[j];
+                    j--;
+                }
+                arr[j + 1] = key;
+            }
+            return arr;
+        }
+
+        function countingSort(arr) {
+            let max = Math.max(...arr);
+            let count = new Array(max + 1).fill(0);
+            let output = new Array(arr.length);
+
+            for (let i = 0; i < arr.length; i++) {
+                count[arr[i]]++;
+            }
+            for (let i = 1; i <= max; i++) {
+                count[i] += count[i - 1];
+            }
+            for (let i = arr.length - 1; i >= 0; i--) {
+                output[count[arr[i]] - 1] = arr[i];
+                count[arr[i]]--;
+            }
+            return output;
+        }
+
+        function radixSort(arr) {
+            let max = Math.max(...arr);
+            for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
+                arr = countingSortByExp(arr, exp);
+            }
+            return arr;
+        }
+
+        function countingSortByExp(arr, exp) {
+            let n = arr.length;
+            let output = new Array(n);
+            let count = new Array(10).fill(0);
+
+            for (let i = 0; i < n; i++) {
+                count[Math.floor(arr[i] / exp) % 10]++;
+            }
+            for (let i = 1; i < 10; i++) {
+                count[i] += count[i - 1];
+            }
+            for (let i = n - 1; i >= 0; i--) {
+                output[count[Math.floor(arr[i] / exp) % 10] - 1] = arr[i];
+                count[Math.floor(arr[i] / exp) % 10]--;
+            }
+            return output;
+        }
+
+        // Singular Linked List Operations
+        function SingularLinkedList() {
+            this.head = null;
+        }
+
+        function Node(data) {
+            this.data = data;
+            this.next = null;
+        }
+
+        SingularLinkedList.prototype.insertFirst = function(data) {
+            const newNode = new Node(data);
+            newNode.next = this.head;
+            this.head = newNode;
+        };
+
+        SingularLinkedList.prototype.insertLast = function(data) {
+            const newNode = new Node(data);
+            if (!this.head) {
+                this.head = newNode;
+                return;
+            }
+            let last = this.head;
+            while (last.next) {
+                last = last.next;
+            }
+            last.next = newNode;
+        };
+
+        SingularLinkedList.prototype.printList = function() {
+            let current = this.head;
+            let result = '';
+            while (current) {
+                result += current.data + ' -> ';
+                current = current.next;
+            }
+            return result + 'null';
+        };
+
+        // Double Linked List Operations
+        function DoubleLinkedList() {
+            this.head = null;
+        }
+
+        function DoubleNode(data) {
+            this.data = data;
+            this.next = null;
+            this.prev = null;
+        }
+
+        DoubleLinkedList.prototype.insertFirst = function(data) {
+            const newNode = new DoubleNode(data);
+            newNode.next = this.head;
+            if (this.head) {
+                this.head.prev = newNode;
+            }
+            this.head = newNode;
+        };
+
+        DoubleLinkedList.prototype.insertLast = function(data) {
+            const newNode = new DoubleNode(data);
+            if (!this.head) {
+                this.head = newNode;
+                return;
+            }
+            let last = this.head;
+            while (last.next) {
+                last = last.next;
+            }
+            last.next = newNode;
+            newNode.prev = last;
+        };
+
+        DoubleLinkedList.prototype.printList = function() {
+            let current = this.head;
+            let result = '';
+            while (current) {
+                result += current.data + ' <-> ';
+                current = current.next;
+            }
+            return result + 'null';
+        };
+
+        // Circular Linked List Operations
+        function CircularLinkedList() {
+            this.head = null;
+        }
+
+        CircularLinkedList.prototype.insertFirst = function(data) {
+            const newNode = new Node(data);
+            if (!this.head) {
+                this.head = newNode;
+                newNode.next = this.head;
+            } else {
+                let current = this.head;
+                while (current.next !== this.head) {
+                    current = current.next;
+                }
+                current.next = newNode;
+                newNode.next = this.head;
+            }
+        };
+
+        CircularLinkedList.prototype.printList = function() {
+            if (!this.head) return 'List is empty';
+            let current = this.head;
+            let result = '';
+            do {
+                result += current.data + ' -> ';
+                current = current.next;
+            } while (current !== this.head);
+            return result + ' (circular)';
+        };
+
+        // Expression Conversion and Evaluation
+        function infixToPostfix(infix) {
+            let stack = [];
+            let result = '';
+            const precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3};
+
+            for (let char of infix) {
+                if (/[A-Za-z0-9]/.test(char)) {
+                    result += char;
+                } else if (char === '(') {
+                    stack.push(char);
+                } else if (char === ')') {
+                    while (stack.length && stack[stack.length - 1] !== '(') {
+                        result += stack.pop();
+                    }
+                    stack.pop();
+                } else {
+                    while (stack.length && precedence[char] <= precedence[stack[stack.length - 1]]) {
+                        result += stack.pop();
+                    }
+                    stack.push(char);
+                }
+            }
+            while (stack.length) result += stack.pop();
+            return result;
+        }
+
+        function infixToPrefix(infix) {
+            let reverseInfix = infix.split('').reverse().join('');
+            reverseInfix = reverseInfix.replace(/[(]/g, ')').replace(/[)]/g, '(');
+            let postfix = infixToPostfix(reverseInfix);
+            return postfix.split('').reverse().join('');
+        }
+
+        function postfixEvaluation(postfix) {
+            let stack = [];
+            for (let char of postfix) {
+                if (/[A-Za-z0-9]/.test(char)) {
+                    stack.push(Number(char));
+                } else {
+                    let b = stack.pop();
+                    let a = stack.pop();
+                    if (char === '+') stack.push(a + b);
+                    if (char === '-') stack.push(a - b);
+                    if (char === '*') stack.push(a * b);
+                    if (char === '/') stack.push(a / b);
+                }
+            }
+            return stack.pop();
+        }
+
+        // Tree Traversals
+        function treeInOrder(root) {
+            if (!root) return '';
+            return treeInOrder(root.left) + root.value + ' ' + treeInOrder(root.right);
+        }
+
+        function treePreOrder(root) {
+            if (!root) return '';
+            return root.value + ' ' + treePreOrder(root.left) + treePreOrder(root.right);
+        }
+
+        function treePostOrder(root) {
+            if (!root) return '';
+            return treePostOrder(root.left) + treePostOrder(root.right) + root.value + ' ';
+        }
+
+        // Queue Operations
+        function Queue() {
+            this.items = [];
+        }
+
+        Queue.prototype.enqueue = function(element) {
+            this.items.push(element);
+        };
+
+        Queue.prototype.dequeue = function() {
+            return this.items.shift();
+        };
+
+        Queue.prototype.printQueue = function() {
+            return this.items.join(' <- ');
+        };
+
+        // Rendering Algorithm Buttons
+        const algorithms = [
+            {name: 'Bubble Sort', func: bubbleSort},
+            {name: 'Selection Sort', func: selectionSort},
+            {name: 'Insertion Sort', func: insertionSort},
+            {name: 'Counting Sort', func: countingSort},
+            {name: 'Radix Sort', func: radixSort},
+            {name: 'Singular Linked List', func: SingularLinkedList},
+            {name: 'Double Linked List', func: DoubleLinkedList},
+            {name: 'Circular Linked List', func: CircularLinkedList},
+            {name: 'Infix to Postfix', func: infixToPostfix},
+            {name: 'Infix to Prefix', func: infixToPrefix},
+            {name: 'Postfix Evaluation', func: postfixEvaluation},
+            {name: 'Tree Inorder', func: treeInOrder},
+            {name: 'Tree Preorder', func: treePreOrder},
+            {name: 'Tree Postorder', func: treePostOrder},
+            {name: 'Queue', func: Queue}
+        ];
+
+        function createButton(algorithm) {
+            const button = document.createElement('button');
+            button.classList.add('algorithm-btn');
+            button.textContent = algorithm.name;
+            button.onclick = function() {
+                const inputData = prompt(Enter data for ${algorithm.name}:);
+                const inputArr = inputData.split(',').map(item => item.trim());
+                let output = algorithm.func(inputArr);
+                document.getElementById('output').textContent = output || 'No output available';
+            };
+            return button;
+        }
+
+        function renderAlgorithms() {
+            const algorithmList = document.getElementById('algorithmList');
+            algorithms.forEach(algorithm => {
+                const button = createButton(algorithm);
+                algorithmList.appendChild(button);
+            });
+        }
+
+        renderAlgorithms();
+    </script>
+</body>
+</html>
